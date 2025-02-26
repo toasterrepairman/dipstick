@@ -92,6 +92,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "dipstick"
+version = "0.1.0"
+dependencies = [
+ "glib",
+ "gtk4",
+ "libadwaita",
+ "md5",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -555,19 +568,6 @@ name = "pkg-config"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "953ec861398dccce10c670dfeaf3ec4911ca479e9c02154b3a215178c5f566f2"
-
-[[package]]
-name = "playground"
-version = "0.1.0"
-dependencies = [
- "glib",
- "gtk4",
- "libadwaita",
- "md5",
- "serde",
- "serde_json",
- "sha2",
-]
 
 [[package]]
 name = "proc-macro-crate"

@@ -99,22 +99,19 @@ fn main() {
             list.append(&row);
         }
 
-        // Headerlabel
-        let title = Label::new(Some("Title"));
         // Combine the content in a box
         let content = Box::new(Orientation::Vertical, 0);
         // Adwaitas' ApplicationWindow does not include a HeaderBar
         let cleanheader = HeaderBar::builder()
-            .show_title(false)
+            .show_title(true)
             .css_classes(["flat"])
-            .title_widget(&title)
             .build();
         content.append(&cleanheader);
         content.append(&list);
 
         let window = ApplicationWindow::builder()
             .application(app)
-            .title("First App")
+            .title("Dipstick")
             .default_width(350)
             // add content to window
             .content(&content)
