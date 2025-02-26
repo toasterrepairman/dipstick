@@ -6,6 +6,7 @@ use std::process::Command;
 use std::io;
 use std::string::FromUtf8Error;
 use serde_json::Error as SerdeError;
+use glib::clone;
 
 // Generation object
 #[derive(Debug, Serialize, Deserialize)]
@@ -66,16 +67,8 @@ fn main() {
         .application_id("com.example.Generator")
         .build();
 
-    application.connect_activate(|app| {
-        // ActionRows are only available in Adwaita
-        let row = ActionRow::builder()
-            .activatable(true)
-            .title("Click me")
-            .build();
-        row.connect_activated(|_| {
-            eprintln!("{:?}", get_nixos_generations().unwrap()[1]);
-        });
 
+    application.connect_activate(|app| {
         let list = ListBox::builder()
             .margin_top(32)
             .margin_end(32)
@@ -86,21 +79,10 @@ fn main() {
             .css_classes(vec![String::from("boxed-list")])
             .build();
 
-        // Iterate through generations for listbox:
-        for g in get_nixos_generations().unwrap() {
-            let row = ActionRow::builder()
-                .activatable(true)
-                .title(format!("Generation {:?}", g.generation))
-                .subtitle(format!("{:?}", g.date))
-                .build();
-            row.connect_activated(|_| {
-                eprintln!("{:?}", get_nixos_generations().unwrap()[1]);
-            });
-            list.append(&row);
-        }
 
         // Combine the content in a box
         let content = Box::new(Orientation::Vertical, 0);
+
         // Adwaitas' ApplicationWindow does not include a HeaderBar
         let cleanheader = HeaderBar::builder()
             .show_title(true)
@@ -110,10 +92,40 @@ fn main() {
         content.append(&list);
 
         // Combine the content in a box
-        let navigation = NavigationView::new();
+        let homepage = NavigationPage::new(&content, "Dipstick");
         // Combine the content in a box
-        let homepage = NavigationPage::new(&content, "Home");
+        let navigation = NavigationView::new();
         navigation.push(&homepage);
+
+        // Iterate through generations for listbox:
+        for g in get_nixos_generations().unwrap() {
+            let row = ActionRow::builder()
+                .activatable(true)
+                .title(format!("Generation {:?}", &g.generation))
+                .subtitle(format!("{:?}", &g.date))
+                .build();
+            row.connect_activated(clone!(@strong navigation => move |_| {
+                // Create new header
+                let gen_header = HeaderBar::builder()
+                    .show_title(true)
+                    .css_classes(["flat"])
+                    .build();
+                // nix Version
+                let nixosVersion = ActionRow::builder()
+                    .activatable(false)
+                    .title(format!("NixOS Version"))
+                    .subtitle(format!("{:?}", &g.nixosVersion))
+                    .build();
+                // Combine the content in a box
+                let gen_content = Box::new(Orientation::Vertical, 0);
+                gen_content.append(&gen_header);
+                gen_content.append(&nixosVersion);
+                // Generate page
+                let gen_page = NavigationPage::new(&gen_content, &format!("Generation {:?}", &g.generation));
+                navigation.push(&gen_page);
+            }));
+            list.append(&row);
+        }
 
         let window = ApplicationWindow::builder()
             .application(app)
