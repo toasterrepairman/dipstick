@@ -1,5 +1,5 @@
 use adw::prelude::*;
-use adw::{ActionRow, Application, ApplicationWindow, HeaderBar};
+use adw::{ActionRow, Application, ApplicationWindow, HeaderBar, NavigationView, NavigationPage};
 use gtk::{Box, ListBox, Orientation, SelectionMode, Label};
 use serde::{Deserialize, Serialize};
 use std::process::Command;
@@ -90,7 +90,7 @@ fn main() {
         for g in get_nixos_generations().unwrap() {
             let row = ActionRow::builder()
                 .activatable(true)
-                .title(format!("{:?}", g.generation))
+                .title(format!("Generation {:?}", g.generation))
                 .subtitle(format!("{:?}", g.date))
                 .build();
             row.connect_activated(|_| {
@@ -109,12 +109,18 @@ fn main() {
         content.append(&cleanheader);
         content.append(&list);
 
+        // Combine the content in a box
+        let navigation = NavigationView::new();
+        // Combine the content in a box
+        let homepage = NavigationPage::new(&content, "Home");
+        navigation.push(&homepage);
+
         let window = ApplicationWindow::builder()
             .application(app)
             .title("Dipstick")
             .default_width(350)
             // add content to window
-            .content(&content)
+            .content(&navigation)
             .build();
         window.present();
     });
