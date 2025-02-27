@@ -79,7 +79,6 @@ fn main() {
             .css_classes(vec![String::from("boxed-list")])
             .build();
 
-
         // Combine the content in a box
         let content = Box::new(Orientation::Vertical, 0);
 
@@ -116,10 +115,22 @@ fn main() {
                     .title(format!("NixOS Version"))
                     .subtitle(format!("{:?}", &g.nixosVersion))
                     .build();
+                let kernelVersion = ActionRow::builder()
+                    .activatable(false)
+                    .title(format!("Linux Kernel Version"))
+                    .subtitle(format!("{:?}", &g.kernelVersion))
+                    .build();
+                let currentVersion = ActionRow::builder()
+                    .activatable(false)
+                    .title(format!("Current Generation"))
+                    .subtitle(format!("{:?}", &g.current))
+                    .build();
                 // Combine the content in a box
                 let gen_content = Box::new(Orientation::Vertical, 0);
                 gen_content.append(&gen_header);
                 gen_content.append(&nixosVersion);
+                gen_content.append(&kernelVersion);
+                gen_content.append(&currentVersion);
                 // Generate page
                 let gen_page = NavigationPage::new(&gen_content, &format!("Generation {:?}", &g.generation));
                 navigation.push(&gen_page);
