@@ -53,7 +53,7 @@
       };
 
       myRustBuild = rustPlatform.buildRustPackage {
-        pname = "playground"; # make this what ever your cargo.toml package.name is
+        pname = "dipstick"; # make this what ever your cargo.toml package.name is
         version = "0.1.0";
         src = ./.; # the folder with the cargo.toml
         nativeBuildInputs = packageDeps;
@@ -61,9 +61,9 @@
         cargoLock.lockFile = ./Cargo.lock;
 
         postBuild = ''
-          install -Dt $out/share/applications resources/groucho.desktop
+          install -Dt $out/share/applications resources/dipstick.desktop
 
-          install -Dt $out/share/icons resources/icon-groucho.png
+          install -Dt $out/share/icons resources/icon-dipstick.png
         '';
       };
     in {
@@ -75,7 +75,7 @@
       };
 
       meta = with nixpkgs.lib; {
-        description = "groucho";
+        description = "dipstick";
         license = licenses.gpl3;
         platforms = platforms.all;
       };

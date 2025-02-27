@@ -47,6 +47,7 @@ impl From<SerdeError> for GenerationError {
     }
 }
 
+// NixOS generation retrieval function (parses from json)
 pub fn get_nixos_generations() -> Result<Vec<Generation>, GenerationError> {
     let output = Command::new("nixos-rebuild")
         .arg("list-generations")
@@ -62,12 +63,14 @@ pub fn get_nixos_generations() -> Result<Vec<Generation>, GenerationError> {
     Ok(generations)
 }
 
+// program entrypoint
 fn main() {
+    // App definition
     let application = Application::builder()
         .application_id("com.example.Generator")
         .build();
 
-
+    // App closure
     application.connect_activate(|app| {
         let list = ListBox::builder()
             .margin_top(32)
@@ -101,7 +104,7 @@ fn main() {
             let row = ActionRow::builder()
                 .activatable(true)
                 .title(format!("Generation {:?}", &g.generation))
-                .subtitle(format!("{:?}", &g.date))
+                .subtitle(format!("{}", &g.date))
                 .build();
             row.connect_activated(clone!(@strong navigation => move |_| {
                 // Create new header
@@ -109,21 +112,21 @@ fn main() {
                     .show_title(true)
                     .css_classes(["flat"])
                     .build();
-                // nix Version
+                // Builders for various parameters
                 let nixosVersion = ActionRow::builder()
                     .activatable(false)
                     .title(format!("NixOS Version"))
-                    .subtitle(format!("{:?}", &g.nixosVersion))
+                    .subtitle(format!("{}", &g.nixosVersion))
                     .build();
                 let kernelVersion = ActionRow::builder()
                     .activatable(false)
                     .title(format!("Linux Kernel Version"))
-                    .subtitle(format!("{:?}", &g.kernelVersion))
+                    .subtitle(format!("{}", &g.kernelVersion))
                     .build();
                 let currentVersion = ActionRow::builder()
                     .activatable(false)
                     .title(format!("Current Generation"))
-                    .subtitle(format!("{:?}", &g.current))
+                    .subtitle(format!("{}", &g.current))
                     .build();
                 // Combine the content in a box
                 let gen_content = Box::new(Orientation::Vertical, 0);
@@ -138,6 +141,7 @@ fn main() {
             list.append(&row);
         }
 
+        // Define window parameters
         let window = ApplicationWindow::builder()
             .application(app)
             .title("Dipstick")
@@ -148,5 +152,6 @@ fn main() {
         window.present();
     });
 
+    // start app
     application.run();
 }
